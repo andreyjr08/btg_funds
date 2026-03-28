@@ -38,7 +38,10 @@ class _SubscribeModalState extends ConsumerState<SubscribeModal> {
                 color: Colors.red.shade100,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Text(errorMessage!, style: TextStyle(color: Colors.red)),
+              child: Text(
+                errorMessage!,
+                style: const TextStyle(color: Colors.red),
+              ),
             ),
 
           TextField(

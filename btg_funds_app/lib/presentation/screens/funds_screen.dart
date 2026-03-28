@@ -21,7 +21,7 @@ class FundsScreen extends ConsumerWidget {
     final subscriptions = ref.watch(subscriptionsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: SectionTitle("Fondos")),
+      appBar: AppBar(title: const SectionTitle("Fondos")),
       body: fundsAsync.when(
         data: (funds) => ListView.builder(
           itemCount: funds.length,

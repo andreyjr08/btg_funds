@@ -25,8 +25,8 @@ class TransactionsScreen extends ConsumerWidget {
 
     if (sorted.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: SectionTitle("Historial")),
-        body: EmptyState(message: "No tienes transacciones aún"),
+        appBar: AppBar(title: const SectionTitle("Historial")),
+        body: const EmptyState(message: "No tienes transacciones aún"),
       );
     }
 
@@ -43,7 +43,7 @@ class TransactionsScreen extends ConsumerWidget {
     }).toList();
 
     return Scaffold(
-      appBar: AppBar(title: SectionTitle("Historial")),
+      appBar: AppBar(title: const SectionTitle("Historial")),
       body: Column(
         children: [
           Row(

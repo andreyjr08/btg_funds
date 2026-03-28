@@ -1,3 +1,4 @@
+import 'package:btg_funds_app/presentation/providers/subscriptions_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:btg_funds_app/domain/entities/fund_entity.dart';
 import 'package:btg_funds_app/domain/usecases/subscribe_to_fund.dart';
@@ -14,28 +15,58 @@ class FundsViewModel extends AsyncNotifier<List<FundEntity>> {
 
   @override
   Future<List<FundEntity>> build() async {
-    final repo = ref.read(fundsRepositoryProvider);
+    final repo = ref.watch(fundsRepositoryProvider);
 
-    _subscribe = ref.read(subscribeUseCaseProvider);
+    _subscribe = ref.watch(subscribeUseCaseProvider);
 
     return repo.getFunds();
   }
 
-  void subscribe(FundEntity fund, double amount) {
+  String? subscribe(FundEntity fund, double amount) {
     final wallet = ref.read(walletProvider);
     final walletNotifier = ref.read(walletProvider.notifier);
     final txNotifier = ref.read(transactionsProvider.notifier);
+    final subscriptionsNotifier = ref.read(subscriptionsProvider.notifier);
 
     try {
       _subscribe.execute(
         currentBalance: wallet,
         amount: amount,
         minAmount: fund.minAmount,
-        onSuccessSubtract: (value) => walletNotifier.subtract(value),
+        onSuccessSubtract: (value) {
+          walletNotifier.subtract(value);
+          subscriptionsNotifier.subscribe(fund.id, value);
+        },
         onTransaction: (tx) => txNotifier.addTransaction(tx),
       );
+      return null;
     } catch (e) {
-      rethrow;
+      return e.toString();
+    }
+  }
+
+  String? cancel(FundEntity fund) {
+    final subscriptions = ref.read(subscriptionsProvider);
+    final amount = subscriptions[fund.id] ?? 0;
+
+    final walletNotifier = ref.read(walletProvider.notifier);
+    final subscriptionsNotifier = ref.read(subscriptionsProvider.notifier);
+    final txNotifier = ref.read(transactionsProvider.notifier);
+
+    final useCase = ref.read(cancelSubscriptionProvider);
+
+    try {
+      useCase.execute(
+        investedAmount: amount,
+        fundId: fund.id,
+        onRefund: (value) => walletNotifier.add(value),
+        onRemoveSubscription: () => subscriptionsNotifier.cancel(fund.id),
+        onTransaction: (tx) => txNotifier.addTransaction(tx),
+      );
+
+      return null;
+    } catch (e) {
+      return e.toString();
     }
   }
 }

@@ -27,7 +27,7 @@ class FundCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(fundEntity.name),
+                Expanded(child: Text(fundEntity.name)),
                 StatusChip(
                   label: isSubscribed ? "Activo" : "Disponible",
                   color: isSubscribed ? Colors.green : Colors.grey,
@@ -37,10 +37,19 @@ class FundCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Monto mínimo: ${CurrencyFormatter.format(fundEntity.minAmount)}",
+                Expanded(
+                  child: Text(
+                    "Monto mínimo: ${CurrencyFormatter.format(fundEntity.minAmount)}",
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                Text("Categoría: ${fundEntity.category}"),
+                Expanded(
+                  child: Text(
+                    "Categoría: ${fundEntity.category}",
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
+                  ),
+                ),
               ],
             ),
 

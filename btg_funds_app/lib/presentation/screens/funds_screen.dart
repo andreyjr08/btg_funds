@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:btg_funds_app/presentation/routes/routes.dart';
+import 'package:btg_funds_app/presentation/widgets/app_card.dart';
+import 'package:btg_funds_app/presentation/widgets/fund_card.dart';
+import 'package:btg_funds_app/presentation/widgets/money_text.dart';
+import 'package:btg_funds_app/presentation/widgets/section_title.dart';
 import 'package:btg_funds_app/presentation/widgets/subscribe_modal.dart';
 import 'package:btg_funds_app/presentation/providers/wallet_provider.dart';
 import 'package:btg_funds_app/presentation/providers/funds_view_model.dart';
@@ -17,7 +21,7 @@ class FundsScreen extends ConsumerWidget {
     final subscriptions = ref.watch(subscriptionsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Fondos")),
+      appBar: AppBar(title: SectionTitle("Fondos")),
       body: fundsAsync.when(
         data: (funds) => ListView.builder(
           itemCount: funds.length,
@@ -25,32 +29,39 @@ class FundsScreen extends ConsumerWidget {
             final fund = funds[i];
             final isSubscribed = subscriptions.containsKey(fund.id);
 
-            return ListTile(
-              title: Text(fund.name),
-              subtitle: Text("Min: ${fund.minAmount}"),
-              trailing: ElevatedButton(
-                onPressed: () {
-                  if (isSubscribed) {
-                    _confirmCancel(context, () {
-                      final error = ref
-                          .read(fundsViewModelProvider.notifier)
-                          .cancel(fund);
+            return FundCard(
+              fundEntity: fund,
+              isSubscribed: isSubscribed,
+              onAction: () {
+                if (isSubscribed) {
+                  _confirmCancel(context, () {
+                    final error = ref
+                        .read(fundsViewModelProvider.notifier)
+                        .cancel(fund);
 
-                      if (error != null) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text(error)));
-                      }
-                    });
-                  } else {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (_) => SubscribeModal(fund: fund),
-                    );
-                  }
-                },
-                child: Text(isSubscribed ? "Cancelar" : "Suscribirse"),
-              ),
+                    if (error != null) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(error.message)));
+                    }
+                  });
+                } else {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) {
+                      return SafeArea(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom,
+                          ),
+                          child: Wrap(children: [SubscribeModal(fund: fund)]),
+                        ),
+                      );
+                    },
+                  );
+                }
+              },
             );
           },
         ),
@@ -69,7 +80,25 @@ class FundsScreen extends ConsumerWidget {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),
-        child: Text("Saldo: $balance"),
+        child: AppCard(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: SizedBox(
+              height: 100,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Saldo disponible",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 8),
+                  MoneyText(amount: balance),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,7 +1,8 @@
-import 'package:btg_funds_app/presentation/providers/funds_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:btg_funds_app/domain/entities/fund_entity.dart';
+import 'package:btg_funds_app/core/utils/currency_formatter.dart';
+import 'package:btg_funds_app/presentation/providers/funds_view_model.dart';
 
 class SubscribeModal extends ConsumerStatefulWidget {
   final FundEntity fund;
@@ -16,6 +17,7 @@ class _SubscribeModalState extends ConsumerState<SubscribeModal> {
   final _controller = TextEditingController();
 
   String notificationMethod = "email";
+  String? errorMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +30,24 @@ class _SubscribeModalState extends ConsumerState<SubscribeModal> {
 
           const SizedBox(height: 16),
 
+          if (errorMessage != null)
+            Container(
+              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: Colors.red.shade100,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(errorMessage!, style: TextStyle(color: Colors.red)),
+            ),
+
           TextField(
             controller: _controller,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: "Monto",
-              hintText: "Mínimo: ${widget.fund.minAmount}",
+              hintText:
+                  "Mínimo: ${CurrencyFormatter.format(widget.fund.minAmount)}",
             ),
           ),
 
@@ -64,7 +78,9 @@ class _SubscribeModalState extends ConsumerState<SubscribeModal> {
     final amount = double.tryParse(_controller.text);
 
     if (amount == null) {
-      _showError("Ingresa un monto válido");
+      setState(() {
+        errorMessage = "Debes ingresar un monto válido";
+      });
       return;
     }
 
@@ -73,22 +89,18 @@ class _SubscribeModalState extends ConsumerState<SubscribeModal> {
         .subscribe(widget.fund, amount);
 
     if (error != null) {
-      _showError(error);
+      setState(() {
+        errorMessage = error.message;
+      });
     } else {
       Navigator.pop(context);
       _showSuccess("Suscripción exitosa ($notificationMethod)");
     }
   }
 
-  void _showError(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
-  }
-
   void _showSuccess(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.green),
+    );
   }
 }

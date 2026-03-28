@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:btg_funds_app/presentation/widgets/money_text.dart';
+import 'package:btg_funds_app/presentation/widgets/empty_state.dart';
+import 'package:btg_funds_app/presentation/widgets/status_chip.dart';
+import 'package:btg_funds_app/presentation/widgets/section_title.dart';
 import 'package:btg_funds_app/domain/entities/fund_transaction_entity.dart';
 import 'package:btg_funds_app/presentation/providers/transactions_provider.dart';
-import 'package:flutter_riverpod/legacy.dart';
 
 enum TransactionFilter { all, subscribe, cancel }
 
@@ -20,7 +24,10 @@ class TransactionsScreen extends ConsumerWidget {
     final sorted = [...transactions]..sort((a, b) => b.date.compareTo(a.date));
 
     if (sorted.isEmpty) {
-      return const _EmptyState();
+      return Scaffold(
+        appBar: AppBar(title: SectionTitle("Historial")),
+        body: EmptyState(message: "No tienes transacciones aún"),
+      );
     }
 
     final filter = ref.watch(transactionFilterProvider);
@@ -36,7 +43,7 @@ class TransactionsScreen extends ConsumerWidget {
     }).toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Historial")),
+      appBar: AppBar(title: SectionTitle("Historial")),
       body: Column(
         children: [
           Row(
@@ -89,49 +96,21 @@ class _TransactionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSubscribe = tx.type == TransactionType.subscribe;
+    final isSubscribed = tx.type == TransactionType.subscribe;
 
     return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: isSubscribe
-            ? Colors.green.withValues(alpha: 0.2)
-            : Colors.red.withValues(alpha: 0.2),
-        child: Icon(
-          isSubscribe ? Icons.arrow_downward : Icons.arrow_upward,
-          color: isSubscribe ? Colors.green : Colors.red,
-        ),
+      leading: StatusChip(
+        label: isSubscribed ? "Activo" : "Disponible",
+        color: isSubscribed ? Colors.green : Colors.grey,
       ),
-      title: Text("Fondo ${tx.fundId}"),
+      title: Text("Fondo ${tx.fundName}"),
       subtitle: Text(_formatDate(tx.date)),
-      trailing: Text(
-        "${isSubscribe ? '-' : '+'} \$${tx.amount.toStringAsFixed(2)}",
-        style: TextStyle(
-          color: isSubscribe ? Colors.red : Colors.green,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+      trailing: MoneyText(amount: tx.amount),
     );
   }
 
   String _formatDate(DateTime date) {
     return "${date.day}/${date.month}/${date.year} "
         "${date.hour}:${date.minute.toString().padLeft(2, '0')}";
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  const _EmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Historial")),
-      body: const Center(
-        child: Text(
-          "No tienes transacciones aún",
-          style: TextStyle(fontSize: 16, color: Colors.grey),
-        ),
-      ),
-    );
   }
 }

@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:btg_funds_app/core/utils/currency_formatter.dart';
 
+/// Widget que muestra una cantidad de dinero formateada.
+/// Aplica color verde para montos positivos y rojo para negativos.
 class MoneyText extends StatelessWidget {
+  /// Cantidad monetaria a mostrar.
   final double amount;
 
+  /// Crea un [MoneyText].
+  /// 
+  /// Parámetros:
+  ///   - [amount]: Valor monetario a mostrar.
   const MoneyText({super.key, required this.amount});
 
   @override

@@ -8,8 +8,13 @@ import 'package:btg_funds_app/presentation/widgets/section_title.dart';
 import 'package:btg_funds_app/domain/entities/fund_transaction_entity.dart';
 import 'package:btg_funds_app/presentation/providers/transactions_provider.dart';
 
+/// Filtros disponibles para las transacciones.
+/// Permite filtrar entre todas, solo suscripciones o solo cancelaciones.
 enum TransactionFilter { all, subscribe, cancel }
 
+/// Pantalla que muestra el historial de transacciones del usuario.
+/// Permite filtrar transacciones por tipo (suscripción/cancelación).
+/// Las transacciones se muestran ordenadas por fecha (más recientes primero).
 class TransactionsScreen extends ConsumerWidget {
   final transactionFilterProvider = StateProvider<TransactionFilter>(
     (ref) => TransactionFilter.all,
@@ -89,9 +94,16 @@ class TransactionsScreen extends ConsumerWidget {
   }
 }
 
+/// Widget que representa un elemento de transacción en la lista.
+/// Muestra información resumida: tipo, fondo, fecha y monto de la transacción.
 class _TransactionItem extends StatelessWidget {
+  /// Transacción a mostrar.
   final FundTransaction tx;
 
+  /// Crea un [_TransactionItem].
+  /// 
+  /// Parámetros:
+  ///   - [tx]: Transacción a mostrar.
   const _TransactionItem({required this.tx});
 
   @override
@@ -109,6 +121,12 @@ class _TransactionItem extends StatelessWidget {
     );
   }
 
+  /// Formatea una fecha al formato: dd/mm/yyyy hh:mm
+  /// 
+  /// Parámetros:
+  ///   - [date]: Fecha y hora a formatear.
+  /// 
+  /// Retorna: String con la fecha formateada.
   String _formatDate(DateTime date) {
     return "${date.day}/${date.month}/${date.year} "
         "${date.hour}:${date.minute.toString().padLeft(2, '0')}";

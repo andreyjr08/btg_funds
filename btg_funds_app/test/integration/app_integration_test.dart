@@ -62,7 +62,7 @@ void main() {
         await tester.tap(subscribeButton);
         await tester.pumpAndSettle();
 
-        final amountField = find.byType(TextField);
+        final amountField = find.byType(TextFormField);
         expect(amountField, findsOneWidget);
 
         // Extraer el monto mínimo mostrado en la primera tarjeta
@@ -77,7 +77,7 @@ void main() {
         await tester.enterText(amountField, minAmount.toString());
         await tester.pumpAndSettle();
 
-        final confirmButton = find.text('Confirmar');
+        final confirmButton = find.text('Confirmar suscripción');
         expect(confirmButton, findsOneWidget);
 
         await tester.tap(confirmButton);

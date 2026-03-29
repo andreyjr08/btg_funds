@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 
+/// Widget que muestra un chip (etiqueta) con estado visual.
+/// Utilizado para mostrar el estado de un fondo (Activo/Disponible).
 class StatusChip extends StatelessWidget {
+  /// Texto a mostrar en el chip.
   final String label;
+  
+  /// Color base del chip.
   final Color color;
 
+  /// Crea un [StatusChip].
+  /// 
+  /// Parámetros:
+  ///   - [label]: Texto a mostrar.
+  ///   - [color]: Color del chip.
   const StatusChip({super.key, required this.label, required this.color});
 
   @override

@@ -8,12 +8,20 @@ import 'package:btg_funds_app/presentation/providers/transactions_provider.dart'
 import 'package:btg_funds_app/presentation/providers/subscriptions_provider.dart';
 import 'package:btg_funds_app/presentation/providers/repositories_providers.dart';
 
+/// Provider que expone el ViewModel de fondos.
+/// 
+/// Retorna una lista asíncrona de fondos disponibles.
 final fundsViewModelProvider =
     AsyncNotifierProvider<FundsViewModel, List<FundEntity>>(FundsViewModel.new);
 
+/// ViewModel que orquesta la lógica de negocio para fondos de inversión.
+/// 
+/// Proporciona métodos para cargar fondos, suscribirse y cancelar suscripciones,
+/// coordinando entre repositorios, casos de uso y providers de estado.
 class FundsViewModel extends AsyncNotifier<List<FundEntity>> {
   late final SubscribeToFund _subscribe;
 
+  /// Construye el ViewModel e inicializa los datos de fondos desde el repositorio.
   @override
   Future<List<FundEntity>> build() async {
     final repo = ref.watch(fundsRepositoryProvider);
@@ -23,6 +31,13 @@ class FundsViewModel extends AsyncNotifier<List<FundEntity>> {
     return repo.getFunds();
   }
 
+  /// Suscribe al usuario a un fondo con los validaciones de negocio.
+  /// 
+  /// Parámetros:
+  /// - [fund]: El fondo al que suscribirse.
+  /// - [amount]: Monto a invertir en el fondo.
+  /// 
+  /// Retorna [Failure] si ocurre un error, null si es exitoso.
   Failure? subscribe(FundEntity fund, double amount) {
     final wallet = ref.read(walletProvider);
     final walletNotifier = ref.read(walletProvider.notifier);
@@ -49,6 +64,11 @@ class FundsViewModel extends AsyncNotifier<List<FundEntity>> {
     }
   }
 
+  /// Cancela la suscripción a un fondo y reembolsa el monto invertido.
+  /// 
+  /// Parámetro [fund]: El fondo a cancelar.
+  /// 
+  /// Retorna [Failure] si ocurre un error, null si es exitoso.
   Failure? cancel(FundEntity fund) {
     final subscriptions = ref.read(subscriptionsProvider);
     final amount = subscriptions[fund.id] ?? 0;

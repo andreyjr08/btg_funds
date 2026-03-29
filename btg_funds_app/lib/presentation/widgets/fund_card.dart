@@ -5,11 +5,24 @@ import 'package:btg_funds_app/presentation/widgets/app_card.dart';
 import 'package:btg_funds_app/presentation/widgets/status_chip.dart';
 import 'package:btg_funds_app/presentation/widgets/primary_button.dart';
 
+/// Widget que muestra la información de un fondo de inversión.
+/// Incluye nombre, monto mínimo, categoría y estado de suscripción.
 class FundCard extends StatelessWidget {
+  /// Entidad del fondo a mostrar.
   final FundEntity fundEntity;
+  
+  /// Indica si el usuario está suscrito a este fondo.
   final bool isSubscribed;
+  
+  /// Callback ejecutado al presionar el botón de acción.
   final VoidCallback onAction;
 
+  /// Crea un [FundCard].
+  /// 
+  /// Parámetros:
+  ///   - [fundEntity]: Fondo a mostrar.
+  ///   - [isSubscribed]: Estado de suscripción.
+  ///   - [onAction]: Callback para suscripción o cancelación.
   const FundCard({
     super.key,
     required this.fundEntity,
@@ -52,7 +65,6 @@ class FundCard extends StatelessWidget {
                 ),
               ],
             ),
-
             PrimaryButton(
               text: isSubscribed ? "Cancelar" : "Suscribirse",
               onPressed: onAction,

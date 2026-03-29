@@ -97,13 +97,13 @@ Future<void> tapButtonWithText(WidgetTester tester, String text) async {
   await tester.pumpAndSettle();
 }
 
-/// Encuentra y ingresa texto en un TextField
+/// Encuentra y ingresa texto en un TextFormField
 Future<void> enterTextInField(
   WidgetTester tester,
   String text, {
   int index = 0,
 }) async {
-  final textFields = find.byType(TextField);
+  final textFields = find.byType(TextFormField);
   if (textFields.evaluate().isNotEmpty) {
     await tester.enterText(textFields.at(index), text);
     await tester.pumpAndSettle();
